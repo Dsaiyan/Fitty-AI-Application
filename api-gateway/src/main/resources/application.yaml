@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: api-gateway
+# other properties loaded from config server
+  config:
+    import: optional:configserver:discovery://config-server
+
+  # You can delay config loading slightly to wait for Eureka registration
+  cloud:
+    config:
+        discovery:
+          enabled: true
+          service-id: config-server

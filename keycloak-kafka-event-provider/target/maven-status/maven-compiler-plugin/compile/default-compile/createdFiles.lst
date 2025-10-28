@@ -1,0 +1,3 @@
+com/keycloaktesting/provider/KafkaEventListenerProvider.class
+com/keycloaktesting/provider/KafkaProducerManager.class
+com/keycloaktesting/provider/KafkaEventListenerProviderFactory.class

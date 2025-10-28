@@ -1,0 +1,8 @@
+syntax = "3";
+
+message ActivityEvent {
+  string user_id = 1;
+  string activity_type = 2;
+  int64 timestamp = 3;
+  map<string, string> metadata = 4;
+}
