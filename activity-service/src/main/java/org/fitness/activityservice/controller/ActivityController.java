@@ -16,7 +16,14 @@ public class ActivityController {
     private final ActivityService activityService;
 
     @PostMapping
-    public ResponseEntity<ActivityResponseDto> trackActivity(@RequestBody ActivityRequestDto activityRequest) {
+    public ResponseEntity<ActivityResponseDto> trackActivity(@RequestBody ActivityRequestDto activityRequest,
+                                                             @RequestHeader(value = "X-User-Id", required = false) String userIdHeader) {
+        // Ensure userId comes from authenticated header, not trusting client body
+        if (userIdHeader == null || userIdHeader.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        // Override/assign userId from header if missing or different
+        activityRequest.setUserId(userIdHeader);
         return ResponseEntity.ok(activityService.trackActivity(activityRequest));
     }
 

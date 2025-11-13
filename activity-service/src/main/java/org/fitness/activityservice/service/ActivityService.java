@@ -30,6 +30,9 @@ public class ActivityService {
 
     public ActivityResponseDto trackActivity(ActivityRequestDto activityRequest) {
         //validate userId by checking via auth service
+        if (activityRequest.getUserId() == null || activityRequest.getUserId().isBlank()) {
+            throw new UserNotMatchException("Missing user ID in request");
+        }
         if(!authServiceFeignClient.validateUser(activityRequest.getUserId())) {
             throw new UserNotMatchException("Invalid user ID: " + activityRequest.getUserId());
         }
@@ -56,6 +59,9 @@ public class ActivityService {
     }
 
     public List<ActivityResponseDto> getAllActivitiesByUser(String userId) {
+        if (userId == null || userId.isBlank()) {
+            throw new UserNotMatchException("Missing user ID in request header");
+        }
         // Validate userId by checking via auth service
         if(!authServiceFeignClient.validateUser(userId)) {
             throw new UserNotMatchException("Invalid user ID: " + userId);

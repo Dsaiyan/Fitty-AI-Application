@@ -1,22 +1,38 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
+import { authConfig} from "../config/authConfig.js";
 
-
-const authSlice = createSlice({
-    name: 'auth',
+export const authSlice = createSlice({
+    name: 'authReducer',
     initialState: {
-        user: JSON.parse(localStorage.getItem('user')) ||null ,
+        user: (() => {
+            const item = localStorage.getItem('user');
+            return item ? JSON.parse(item) : null;
+        })(),
         token: localStorage.getItem('token') || null,
         userId: localStorage.getItem('userId') || null,
+        authConfig: authConfig,
     },
     reducers: {
         setCredentials: (state, action) => {
-            //todo later
+            const { user, token, userId } = action.payload;
+            state.user = user
+            state.token = token
+            state.userId = userId;
+            localStorage.setItem('user', JSON.stringify(user))
+            localStorage.setItem('token', token)
+            localStorage.setItem('userId', userId)
         },
         logout: (state) => {
-            //todo later
-        }
+            state.user = null
+            state.token = null
+            state.userId = null
+            localStorage.removeItem('user')
+            localStorage.removeItem('token')
+            localStorage.removeItem('userId')
+        },
     },
 })
 
-export const {setCredentials,logout } = authSlice.actions;
-export default authSlice.reducer;
+// Action creators are generated for each case reducer function
+export const { setCredentials,logout } = authSlice.actions
+export default authSlice.reducer

@@ -13,11 +13,15 @@ spring:
             - id: activity-service
               uri: lb://activity-service
               predicates:
-                - Path=/activities/**
+                - Path=/api/activities/**
+              filters:
+                - StripPrefix=1
             - id: ai-service
               uri: lb://ai-service
               predicates:
-                - Path=/recommendations/**
+                - Path=/api/recommendations/**
+              filters:
+                - StripPrefix=1
 
           discovery:
             locator:
@@ -40,6 +44,9 @@ management:
     web:
       exposure:
         include: "*"
+
+frontend:
+  url: http://localhost:5173
 
 server:
   port: 8080

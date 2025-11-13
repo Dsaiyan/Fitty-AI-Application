@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name="auth-service")
 public interface AuthServiceFeignClient {
 
-    @GetMapping("auth/validate/{id}")
+    @GetMapping("/auth/validate/{id}")
     Boolean validateUser(@PathVariable("id") String id);
 }
