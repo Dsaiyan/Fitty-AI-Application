@@ -20,7 +20,15 @@ api.interceptors.request.use(config => {
     return config;
 });
 
-export const getActivitiesByUserId = (id) => api.get(`/activities/${id}`) ;
-export const getActivityDetails = (id) => api.get(`/recommendations/activity/${id}`) ;
-export const addActivity = (activity) => api.post('/activities', activity ) ;
+// Get all activities for current user (uses X-User-Id header from interceptor)
+export const getAllActivities = () => api.get('/activities');
+
+// Get a single activity by ID
+export const getActivityById = (id) => api.get(`/activities/${id}`);
+
+// Get activity details with AI recommendations
+export const getActivityDetails = (id) => api.get(`/recommendations/activity/${id}`);
+
+// Add a new activity
+export const addActivity = (activity) => api.post('/activities', activity);
 

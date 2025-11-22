@@ -9,17 +9,46 @@ const ActivityForm = ({onActivityAdded}) => {
         type: '',
         duration: '',
         caloriesBurned: '',
-        additionalMetrics: {}
+        additionalData: {}
     });
+
+    const [metricRows, setMetricRows] = useState([{ key: '', value: '' }]);
+
+    const handleAddMetricRow = () => {
+        setMetricRows([...metricRows, { key: '', value: '' }]);
+    };
+
+    const handleRemoveMetricRow = (index) => {
+        const newRows = metricRows.filter((_, i) => i !== index);
+        setMetricRows(newRows);
+    };
+
+    const handleMetricChange = (index, field, value) => {
+        const newRows = [...metricRows];
+        newRows[index][field] = value;
+        setMetricRows(newRows);
+    };
 
     const handleSubmitForm = async (event) => {
         event.preventDefault();
         try {
             const userId = localStorage.getItem('userId');
-            const payload = { ...activity, userId };
+
+            // Convert metricRows array to additionalData object
+            const additionalData = {};
+            metricRows.forEach(row => {
+                if (row.key && row.value !== '') {
+                    const numValue = parseFloat(row.value);
+                    additionalData[row.key] = isNaN(numValue) ? row.value : numValue;
+                }
+            });
+
+            const payload = { ...activity, additionalData, userId };
+            console.log('Sending payload:', JSON.stringify(payload, null, 2));
             await addActivity(payload);
             onActivityAdded();
-            setActivity({type: '', duration: '', caloriesBurned: '', additionalMetrics: {}});
+            setActivity({type: '', duration: '', caloriesBurned: '', additionalData: {}});
+            setMetricRows([{ key: '', value: '' }]);
             console.log('Activity added successfully:');
         }
         catch (e){
@@ -63,19 +92,50 @@ const ActivityForm = ({onActivityAdded}) => {
                            variant="standard" type="number" value={activity.caloriesBurned}
                            onChange={(e)=> setActivity({...activity, caloriesBurned: e.target.value})}/>
 
-                {/*<TextField fullWidth sx={{ mb: 2 }} label="Additional Metrics (JSON format)"*/}
-                {/*           variant="standard" multiline minRows={3}*/}
-                {/*           value={JSON.stringify(activity.additionalMetrics)}*/}
-                {/*           onChange={(e)=> {*/}
-                {/*               let parsedMetrics = {};*/}
-                {/*               try {*/}
-                {/*                   parsedMetrics = JSON.parse(e.target.value);*/}
-                {/*                   // eslint-disable-next-line no-unused-vars*/}
-                {/*               } catch (error) {*/}
-                {/*                   console.error("Invalid JSON format for additional metrics");*/}
-                {/*               }*/}
-                {/*               setActivity({...activity, additionalMetrics: parsedMetrics});*/}
-                {/*           }}/>*/}
+                {/* Additional Metrics Section */}
+                <Box sx={{ mb: 2, mt: 3 }}>
+                    <InputLabel sx={{ mb: 1, fontWeight: 'bold' }}>Additional Metrics</InputLabel>
+                    {metricRows.map((row, index) => (
+                        <Box key={index} sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
+                            <TextField
+                                label="Name"
+                                variant="standard"
+                                value={row.key}
+                                onChange={(e) => handleMetricChange(index, 'key', e.target.value)}
+                                sx={{ flex: 1 }}
+                            />
+                            <TextField
+                                label="Value"
+                                variant="standard"
+                                type="number"
+                                value={row.value}
+                                onChange={(e) => handleMetricChange(index, 'value', e.target.value)}
+                                sx={{ flex: 1 }}
+                            />
+                            {metricRows.length > 1 && (
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    size="small"
+                                    onClick={() => handleRemoveMetricRow(index)}
+                                    sx={{ minWidth: '40px' }}
+                                >
+                                    -
+                                </Button>
+                            )}
+                        </Box>
+                    ))}
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        onClick={handleAddMetricRow}
+                        sx={{ mt: 1 }}
+                    >
+                        + Add Metric
+                    </Button>
+                </Box>
+
                 <Button type='submit' variant='contained'
                         color='success'>Add Activity</Button>
             </Box>

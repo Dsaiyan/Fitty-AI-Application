@@ -36,6 +36,10 @@ public class ActivityService {
         if(!authServiceFeignClient.validateUser(activityRequest.getUserId())) {
             throw new UserNotMatchException("Invalid user ID: " + activityRequest.getUserId());
         }
+
+        // Log the received additionalData
+        System.out.println("Received additionalData: " + activityRequest.getAdditionalData());
+
         // Convert DTO to entity
         Activity activity = Activity.builder()
                 .userId(activityRequest.getUserId())
